@@ -37419,13 +37419,27 @@
         return;
     }
 
-    window.__tcfapi('getTCData', TCF_API_VERSION, (tcData, success) => {
-        if (!success || !tcData || tcData.cmpStatus !== 'loaded') {
-            showModal('⚠️ IAB TCF Check Warnung', 'Die TCF API konnte <b>TCData</b> nicht erfolgreich abrufen oder die CMP ist nicht vollständig geladen.');
+    window.__tcfapi('addEventListener', TCF_API_VERSION, (tcData, success) => {
+        if (!success) {
+            showModal('⚠️ IAB TCF Check Warnung', 'Der Listener konnte nicht registriert werden.');
             return;
         }
 
+        if (tcData.eventStatus === 'tcloaded' || tcData.eventStatus === 'useractioncomplete') {
+            // 1. Remove the listener immediately to prevent infinite loops (acting like getTCData)
+            window.__tcfapi('removeEventListener', TCF_API_VERSION, (rmSuccess) => {
+                if (rmSuccess) log('Listener erfolgreich entfernt.');
+            }, tcData.listenerId);
+
+            // 2. Process the Data
+            processTCData(tcData);
+        }
+    });
+
+
+    function processTCData(tcData) {
         log('✅ TCData erfolgreich von der CMP abgerufen.');
+
         const consentedVendors = tcData.vendor.consents;
         const presentVendors = new Set();
 
@@ -37498,5 +37512,7 @@
         }
 
         showModal(modalTitle, contentHTML);
-    });
+
+        
+    };
 })();
