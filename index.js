@@ -1,4 +1,4 @@
-(function() {
+(function () {
     // ⚠️ WICHTIG: HIER DAS GEKÜRZTE JSON EINFÜGEN! Nur Vendors: {"1":{"id":1,"name":"..."}, "2":{...}, ...}
     const GVL_VENDORS_JSON = {
         "1": {
@@ -37231,7 +37231,7 @@
             html += '<tr>';
             html += `<td class="iab-vendor-td">${vendor.id}</td>`;
             // white-space: nowrap wird über die Klasse iab-vendor-td abgedeckt
-            html += `<td class="iab-vendor-td iab-vendor-td-name">${vendor.name}</td>`; 
+            html += `<td class="iab-vendor-td iab-vendor-td-name">${vendor.name}</td>`;
             html += '</tr>';
         });
         html += '</tbody>';
@@ -37255,7 +37255,7 @@
             } catch (err) {
                 log('Kopieren fehlgeschlagen: ' + err);
             }
-            window.getSelection().removeAllRanges(); 
+            window.getSelection().removeAllRanges();
         }
     }
 
@@ -37280,64 +37280,113 @@
 
         // Füge CSS Styles in den Kopf des Modals ein
         const style = `
-            <style>
-                #iab-vendor-check-modal {
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                    background: rgba(0, 0, 0, 0.7); z-index: 99999; display: flex; 
-                    justify-content: center; align-items: center;
-                    font-family: sans-serif;
-                }
-                #iab-modal-content {
-                    background: #fff; padding: 20px; border-radius: 8px; 
-                    max-width: 80%; max-height: 80%; overflow-y: auto; 
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
-                }
-                .iab-modal-title {
-                    margin-top: 0; border-bottom: 1px solid #ccc; 
-                    padding-bottom: 10px;
-                }
-                .iab-text-success { color: green; font-weight: bold; }
-                .iab-text-error { color: red; font-weight: bold; }
-                .iab-button {
-                    display: block; width: 100%; margin-top: 20px; 
-                    padding: 10px; background: #007bff; color: white; 
-                    border: none; border-radius: 4px; cursor: pointer;
-                }
-                .iab-copy-button {
-                    display: block; margin-top: 15px; /* Abstand zum Text/Tabelle erhöht */
-                    padding: 10px; background: #28a745; color: white; 
-                    border: none; border-radius: 4px; cursor: pointer;
-                }
+    <style>
+        #iab-vendor-check-modal {
+            position: fixed !important; 
+            top: 0 !important; 
+            left: 0 !important; 
+            width: 100vw !important; 
+            height: 100vh !important; 
+            background: rgba(0, 0, 0, 0.8) !important; 
+            z-index: 2147483647 !important; /* Maximum possible z-index */
+            display: flex !important; 
+            justify-content: center !important; 
+            align-items: center !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+            color: #333 !important;
+            line-height: 1.5 !important;
+        }
+        #iab-modal-content {
+            background: #ffffff !important; 
+            padding: 24px !important; 
+            border-radius: 12px !important; 
+            width: 90% !important;
+            max-width: 800px !important; 
+            max-height: 85vh !important; 
+            overflow-y: auto !important; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important; 
+            position: relative !important;
+        }
+        .iab-modal-title {
+            margin: 0 0 15px 0 !important; 
+            border-bottom: 2px solid #eee !important; 
+            padding-bottom: 10px !important;
+            font-size: 20px !important;
+            color: #000 !important;
+        }
+        .iab-text-success { color: #28a745 !important; font-weight: bold !important; }
+        .iab-text-error { color: #dc3545 !important; font-weight: bold !important; }
+        
+        .iab-button {
+            cursor: pointer !important;
+            transition: opacity 0.2s !important;
+            font-weight: 600 !important;
+        }
+        .iab-button:hover { opacity: 0.8 !important; }
 
-                /* Tabellen-Styles */
-                .iab-vendor-table {
-                    width: 100%; border-collapse: collapse; margin-top: 10px; 
-                    font-size: 14px;
-                }
-                .iab-vendor-table thead tr {
-                    background-color: #f2f2f2;
-                }
-                .iab-vendor-th-id { width: 100px; }
-                .iab-vendor-th-name { text-align: left; }
-                .iab-vendor-th-id, .iab-vendor-th-name, .iab-vendor-td {
-                    border: 1px solid #ddd; padding: 8px; text-align: left; 
-                    vertical-align: top;
-                }
-                .iab-vendor-td-name {
-                    white-space: nowrap; /* Verhindert Umbrüche bei Kommas */
-                }
-                .iab-scroll-container {
-                    max-height: 250px; overflow-y: auto;
-                }
-            </style>
-        `;
+        #iab-vendor-close-btn {
+            display: block !important; 
+            width: 100% !important; 
+            margin-top: 20px !important; 
+            padding: 12px !important; 
+            background: #6c757d !important; 
+            color: white !important; 
+            border: none !important; 
+            border-radius: 6px !important;
+        }
+
+        .iab-copy-button {
+            margin: 10px 0 !important;
+            padding: 8px 16px !important; 
+            background: #007bff !important; 
+            color: white !important; 
+            border: none !important; 
+            border-radius: 4px !important;
+        }
+
+        /* Table Resets & Styling */
+        .iab-vendor-table {
+            width: 100% !important; 
+            border-collapse: collapse !important; 
+            margin-top: 10px !important; 
+            background: white !important;
+            color: #333 !important;
+        }
+        .iab-vendor-table th {
+            background-color: #f8f9fa !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1 !important;
+        }
+        .iab-vendor-th-id, .iab-vendor-th-name, .iab-vendor-td {
+            border: 1px solid #dee2e6 !important; 
+            padding: 10px !important; 
+            text-align: left !important; 
+            font-size: 13px !important;
+        }
+        .iab-vendor-td-name {
+            white-space: normal !important; /* Better for long names on mobile */
+            word-break: break-word !important;
+        }
+        .iab-scroll-container {
+            max-height: 350px !important; 
+            overflow-y: auto !important;
+            border: 1px solid #eee !important;
+            border-radius: 4px !important;
+        }
+        
+        /* Prevent background scrolling when modal is open */
+        body.iab-modal-open {
+            overflow: hidden !important;
+        }
+    </style>`;
 
         // Füge den Style-Block vor dem Inhalt ein
         modalContent.innerHTML = style;
-        
+
         modalContent.innerHTML += `<h3 class="iab-modal-title">${title}</h3>`;
         modalContent.innerHTML += content;
-        
+
         // Füge den Schließen-Button hinzu
         modalContent.innerHTML += `<button id="iab-vendor-close-btn" class="iab-button">Schließen</button>`;
 
@@ -37347,7 +37396,7 @@
         // Füge Klick-Events HIER hinzu, NACHDEM das Modal im DOM ist
         const copyMissingBtn = document.getElementById('copy-missing-vendors');
         if (copyMissingBtn) {
-             copyMissingBtn.onclick = () => {
+            copyMissingBtn.onclick = () => {
                 copyElementText('missing-vendors-table', '✅ Fehlende Vendors Tabelle in die Zwischenablage kopiert.');
                 copyMissingBtn.textContent = '✅ Kopiert!';
                 setTimeout(() => copyMissingBtn.textContent = 'Tabelle kopieren', 2000);
@@ -37355,7 +37404,7 @@
         }
         const copyAdditionalBtn = document.getElementById('copy-additional-vendors');
         if (copyAdditionalBtn) {
-             copyAdditionalBtn.onclick = () => {
+            copyAdditionalBtn.onclick = () => {
                 copyElementText('additional-vendors-table', '✅ Zusätzliche Vendors Tabelle in die Zwischenablage kopiert.');
                 copyAdditionalBtn.textContent = '✅ Kopiert!';
                 setTimeout(() => copyAdditionalBtn.textContent = 'Tabelle kopieren', 2000);
@@ -37387,8 +37436,8 @@
         }
 
         const requiredSet = new Set(REQUIRED_VENDOR_IDS);
-        const missingVendorsData = []; 
-        const additionalVendorsData = []; 
+        const missingVendorsData = [];
+        const additionalVendorsData = [];
 
 
         // Vendor-Checks
@@ -37418,7 +37467,7 @@
         // Konvertiere die Daten in HTML-Tabellen
         const missingVendorsTable = createVendorTableHTML(missingVendorsData, 'missing-vendors-table');
         const additionalVendorsTable = createVendorTableHTML(additionalVendorsData, 'additional-vendors-table');
-        
+
         // --- Ergebnis-Anzeige (HTML-Format) ---
         let contentHTML = '';
         let modalTitle = '';
@@ -37429,7 +37478,7 @@
         } else {
             modalTitle = '❌ IAB Vendor Check: Mängel gefunden!';
             contentHTML += '<p class="iab-text-error">Es fehlen <b>' + missingVendorsData.length + '</b> von ' + REQUIRED_VENDOR_IDS.length + ' erforderlichen Vendors.</p>';
-            
+
             // Abschnitt für fehlende Vendors mit Tabelle und Kopier-Button
             contentHTML += '<h4>Fehlende erforderliche Vendors:</h4>';
             contentHTML += '<p>Klicken Sie auf <b>Tabelle kopieren</b>, um die Daten direkt in Google Sheets/Excel einzufügen.</p>';
